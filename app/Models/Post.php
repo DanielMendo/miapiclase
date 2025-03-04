@@ -4,23 +4,19 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class User extends Model
+class Post extends Model
 {
-    protected $table            = 'users';
+    protected $table            = 'posts';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        'user_id',
         'imagen',
-        'nombre',
-        'apellidos',
-        'email',
-        'password',
-        'telefono',
-        'reset_token',
-        'reset_token_expiration',
+        'titulo',
+        'contenido',
         'status'
     ];
 
@@ -31,7 +27,7 @@ class User extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -53,6 +49,4 @@ class User extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
-    
 }

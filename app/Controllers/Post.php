@@ -2,37 +2,34 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
-use App\Models\User;
-use CodeIgniter\HTTP\Request;
+use CodeIgniter\HTTP\ResponseInterface;
 
-class UserController extends ResourceController
+class Post extends ResourceController
 {
     /**
      * Return an array of resource objects, themselves in array format.
      *
      * @return ResponseInterface
      */
-
+    
     public function __construct()
     {
-        $this->model = new User();
+        $this->model = new \App\Models\Post();
     }
     
     public function index()
     {   
-        $users = $this->model->findAll();
+        $posts = $this->model->findAll();
 
-        if(empty($users)) {
+        if(empty($posts)) {
             $data = [
-                'message' => 'No se encontraron usuarios',
+                'message' => 'No se encontraron publicaciones',
                 'status' => 404
             ];
             return $this->response->setJSON($data, 404);
         }
-            
-        return $this->response->setJSON($users, 200);
+        return $this->respond($this->model->findAll());
     }
 
     /**
@@ -44,13 +41,13 @@ class UserController extends ResourceController
      */
     public function show($id = null)
     {
-        $user = $this->model->find($id);
+        $post = $this->model->find($id);
 
-        if($user) {
-            return $this->response->setJSON($user, 200);
+        if($post) {
+            return $this->response->setJSON($post, 200);
         } else {
             $data = [
-                'message' => 'No se encontraron usuarios',
+                'message' => 'No se encontraron publicaciones',
                 'status' => 404
             ];
             return $this->response->setJSON($data, 404);
@@ -77,29 +74,25 @@ class UserController extends ResourceController
         $json = $this->request->getJSON();
         
         $data = [
+            'user_id' => $json->user_id,
             'imagen' => $json->imagen ?? null,
-            'nombre' => $json->nombre,
-            'apellidos' => $json->apellidos,
-            'email' => $json->email,
-            'password' => $json->password,
-            'telefono' => $json->telefono,
-            'reset_token' => $json->reset_token ?? null,
-            'reset_token_expiration' => $json->reset_token_expiration ?? null,
+            'titulo' => $json->titulo,
+            'contenido' => $json->contenido,
             'status' => $json->status
         ];
 
         if (!$this->model->insert($data)) {
             return $this->response->setJSON([
-                'message' => 'No se pudo crear el usuario',
+                'message' => 'No se pudo crear el post',
                 'status'  => 500
             ], 500);
         }
     
-        $user = $this->model->find($this->model->insertID());
+        $post = $this->model->find($this->model->insertID());
     
         return $this->response->setJSON([
-            'user'    => $user,
-            'message' => 'Usuario creado exitosamente'
+            'post'    => $post,
+            'message' => 'Post creado exitosamente'
         ], 201);
     }
 
@@ -124,10 +117,10 @@ class UserController extends ResourceController
      */
     public function update($id = null)
     {
-        $user = $this->model->find($id);
-        if (!$user) {
+        $post = $this->model->find($id);
+        if (!$post) {
             $data = [
-                'message' => 'No se encontró el usuario',
+                'message' => 'No se encontró el post',
                 'status'  => 404
             ];
             return $this->response->setJSON($data, 404);
@@ -137,22 +130,18 @@ class UserController extends ResourceController
 
         if ($json) {
             $data = [
+                'user_id' => $json->user_id,
                 'imagen' => $json->imagen ?? null,
-                'nombre' => $json->nombre,
-                'apellidos' => $json->apellidos,
-                'email' => $json->email,
-                'password' => $json->password,
-                'telefono' => $json->telefono,
-                'reset_token' => $json->reset_token ?? null,
-                'reset_token_expiration' => $json->reset_token_expiration ?? null,
+                'titulo' => $json->titulo,
+                'contenido' => $json->contenido,
                 'status' => $json->status
             ];
         }
 
         $this->model->update($id, $data);
         $response = [
-            'message' => 'Usuario actualizado exitosamente',
-            'user'    => $user,
+            'message' => 'Post actualizado exitosamente',
+            'post'    => $post,
             'status'  => 200
         ];
         return $this->response->setJSON($response);
@@ -167,8 +156,8 @@ class UserController extends ResourceController
      */
     public function delete($id = null)
     {
-        $user = $this->model->find($id);
-        if (!$user) {
+        $post = $this->model->find($id);
+        if (!$post) {
             $data = [
                 'message' => 'No se encontraron usuarios',
                 'status'  => 404
@@ -178,7 +167,7 @@ class UserController extends ResourceController
 
         $this->model->delete($id);
         return $this->response->setJSON([
-            'message' => 'Usuario eliminado exitosamente',
+            'message' => 'Post eliminado exitosamente',
             'status'  => 200
         ], 200);
     }
